@@ -1,0 +1,81 @@
+//calculations for tire
+//circumference = 2*pi*r = ~1.83531842613 m
+//tire radius = ~0.2921
+//max speed = ~40 km/h = ~11.1111 m/s
+//max rps (rotations per second) = ~6.0534454631
+//NOTE: rps = max speed/tire circumference
+
+
+const int buzzerPin = 8;
+const int ledPin = 13;
+const int hallPin = 12;
+const int pi = 3.14159265;
+float radius = 0.2921;
+int state = 0;
+unsigned long deltaTime = 0; //time b/t one full rotation (0 ms)
+float circumference;
+unsigned long speedRead;
+volatile oldTime;
+long SPEED;
+
+void setup() {
+pinMode(ledPin, OUTPUT);
+pinMode(hallPin, INPUT);
+pinMode(buzzerPin, OUTPUT);
+Serial.begin(9600);
+circumference = 2*pi*radius;
+attachInterrupt(0, speedRead, RISING);
+
+
+
+
+
+}
+
+void loop() {
+
+
+SPEED = circumference/deltaTime;
+state = digitalRead(hallPin);
+delay(10);
+
+
+if (state == LOW) {
+  digitalWrite(ledPin, HIGH);
+  digitalWrite(buzzerPin, HIGH);
+  Serial.println("On");
+  delay(1000);
+
+
+}
+
+else {
+  digitalWrite(ledPin, LOW);
+  digitalWrite(buzzerPin, LOW);
+  Serial.println("Off");
+  delay(1000);
+
+}
+
+{
+void speedRead(); 
+    t = micros();
+    deltaTime = t - oldTime;
+    oldTime = t;
+    
+  }
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
