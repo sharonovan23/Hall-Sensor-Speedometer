@@ -3,6 +3,7 @@
 //tire radius = ~0.2921
 //max speed = ~40 km/h = ~11.1111 m/s
 #include <LiquidCrystal.h>
+
 LiquidCrystal lcd(4, 5, 6, 7, 10, 11);
 
 const int buzzerPin = 9;
@@ -15,7 +16,6 @@ unsigned long deltaTime = 0; //time b/t one full rotation (0 ms)
 float circumference;
 unsigned long speedRead;
 volatile long oldTime;
-volatile long t = oldTime;
 long SPEED;
 
 void setup() {
@@ -24,15 +24,18 @@ pinMode(hallPin, INPUT);
 pinMode(buzzerPin, OUTPUT);
 Serial.begin(9600);
 lcd.begin(16,2);
-attachInterrupt(0, speedRead, RISING);
+attachInterrupt(digitalPinToInterrupt(12), speedRead, RISING);
 circumference = 2*pi*radius;
-
-
 
 
 }
 
 void loop() {
+  
+Serial.print("Speed = ");
+Serial.print(SPEED);
+Serial.print("\n");
+
 lcd.clear();
 lcd.setCursor(0,0);
 lcd.print("  SPEED  COUNTER  ");
@@ -40,14 +43,16 @@ lcd.setCursor(0,1);
 lcd.print(SPEED);
 lcd.print(" SPEED");
 lcd.print("   ");  
+
 state = digitalRead(hallPin);
 delay(10);
+
+SPEED = (deltaTime/circumference);
 
 
 
 if (state == LOW) {
   digitalWrite(ledPin, HIGH);
-  digitalWrite(buzzerPin, HIGH);
   delay(1000);
 
 
@@ -55,19 +60,17 @@ if (state == LOW) {
 
 else {
   digitalWrite(ledPin, LOW);
-  digitalWrite(buzzerPin, LOW);
   delay(1000);
 
 }
 
 
-
 {
 void speedRead(); 
-    t = micros();
-    deltaTime = t - oldTime;
-    oldTime = t;
-    SPEED = (deltaTime/circumference)*1000;
+
+    millis();
+    deltaTime = millis() - oldTime;
+    oldTime = millis();
     
   }
 
