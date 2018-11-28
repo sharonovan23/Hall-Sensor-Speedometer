@@ -16,7 +16,9 @@ unsigned long deltaTime = 0; //time b/t one full rotation (0 ms)
 float circumference;
 unsigned long speedRead;
 volatile long oldTime;
-long SPEED;
+int SPEED;
+int half_revolutions = 0;
+
 
 
 
@@ -27,17 +29,24 @@ pinMode(hallPin, INPUT);
 pinMode(buzzerPin, OUTPUT);
 Serial.begin(9600);
 lcd.begin(16,2);
-attachInterrupt(digitalPinToInterrupt(hallPin), speedRead, RISING);
+attachInterrupt(0, speedRead, FALLING);
 circumference = 2*pi*radius;
+oldTime = 0;
+deltaTime = 0;
 
 
 }
 
 void loop() {
-  
+  if (millis() - oldTime == 1000) {
+SPEED = half_revolutions*60;
 Serial.print("Speed = ");
 Serial.print(SPEED);
 Serial.print("\n");
+half_revolutions = 0;
+oldTime = millis();
+attachInterrupt(0, speedRead, FALLING);
+  }
 
 lcd.clear();
 lcd.setCursor(0,0);
@@ -50,7 +59,7 @@ lcd.print("   ");
 state = digitalRead(hallPin);
 delay(10);
 
-SPEED = (deltaTime/circumference);
+
 
 
 
@@ -71,9 +80,7 @@ else {
 {
 void speedRead(); 
 
-    millis();
-    deltaTime = millis() - oldTime;
-    oldTime = millis();
+    half_revolutions++;
     
   }
 
@@ -81,13 +88,4 @@ void speedRead();
 
 
 }
-
-
-
-
-
-
-
-
-
 
