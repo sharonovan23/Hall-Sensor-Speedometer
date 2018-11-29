@@ -22,11 +22,14 @@
  Serial.begin(9600); 
  lcd.begin(16, 2);
  attachInterrupt(0, SPEED_ADD , FALLING);
+ pinMode(buzzerPin,OUTPUT);
  }
+
+ 
  void loop(){
  if (millis() - timeOld == 1000){ //Update every one second, this will be equal to reading frecuency (Hz).
  detachInterrupt(0);
- SPEED = ( (half_revolutions * 60) * (pi * diameter) ) / 88; // Convert frecuency to RPM, 
+ SPEED = ( (half_revolutions * 60) * (pi * diameter) ) / 88; // Convert frecuency to RPM, Then convert RPM to MPH
  Serial.print("MPH =\t"); 
  Serial.print(SPEED); 
  Serial.print("\t Hz=\t");
@@ -39,6 +42,15 @@
  lcd.print(" MPH = ");
  lcd.print(SPEED);
  lcd.setCursor(0,1);
+
+ if (SPEED >= 10) {
+  lcd.print("   SLOW DOWN! ");
+  digitalWrite(buzzerPin,HIGH);
+ }
+
+ if (SPEED < 10) {
+  digitalWrite(buzzerPin,LOW);
+ }
 
   }
  }
