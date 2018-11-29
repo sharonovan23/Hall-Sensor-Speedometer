@@ -1,0 +1,48 @@
+//calculations
+//top speed on bike = 20 mph = 2200 ft/min
+//tire diameter = 23 inches = ~1.91667 ft
+//circumference of bike = pi*d = 6.02139 ft
+
+#include <LiquidCrystal.h>
+
+
+ const int rs = 12, en = 11, d4 = 6, d5 = 5, d6 = 4, d7 = 3;
+ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+ const int buzzerPin = 9;
+ const int ledPin = 13;
+ const int hallPin = 2;
+ int half_revolutions = 0;
+ int SPEED = 0;
+ unsigned long timeOld = 0;
+ long pi = 3.141592;
+ long diameter = 1.91667;
+
+ 
+ void setup(){
+ Serial.begin(9600); 
+ lcd.begin(16, 2);
+ attachInterrupt(0, SPEED_ADD , FALLING);
+ }
+ void loop(){
+ if (millis() - timeOld == 1000){ //Update every one second, this will be equal to reading frecuency (Hz).
+ detachInterrupt(0);
+ SPEED = ( (half_revolutions * 60) * (pi * diameter) ) / 88; // Convert frecuency to RPM, 
+ Serial.print("MPH =\t"); 
+ Serial.print(SPEED); 
+ Serial.print("\t Hz=\t");
+ Serial.println(half_revolutions);
+ half_revolutions = 0; // Restart the RPM counter
+ timeOld = millis(); // Update lasmillis
+ attachInterrupt(0, SPEED_ADD , FALLING); 
+ lcd.clear();
+ lcd.setCursor(3,0);
+ lcd.print(" MPH = ");
+ lcd.print(SPEED);
+ lcd.setCursor(0,1);
+
+  }
+ }
+
+ void SPEED_ADD (){
+  half_revolutions++;
+ }
