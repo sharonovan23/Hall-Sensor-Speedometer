@@ -11,9 +11,10 @@
  const int buzzerPin = 9;
  const int ledPin = 13;
  const int hallPin = 2;
- int half_revolutions = 0;
- int SPEED = 0;
- unsigned long timeOld = 0;
+ unsigned int SPEED = 0;
+ unsigned int long timeOld = 0;
+ unsigned int t;
+ unsigned int dt;
  long pi = 3.141592;
  long diameter = 1.91667;
 
@@ -21,21 +22,16 @@
  void setup(){
  Serial.begin(9600); 
  lcd.begin(16, 2);
- attachInterrupt(0, SPEED_ADD , FALLING);
+ attachInterrupt(0, SPEED_ADD , RISING);
  pinMode(buzzerPin,OUTPUT);
  }
 
  
  void loop(){
  if (millis() - timeOld == 1000){ //Update every one second, this will be equal to reading frecuency (Hz).
- detachInterrupt(0);
- SPEED = ( (half_revolutions * 60) * (pi * diameter) ) / 88; // Convert frecuency to RPM, Then convert RPM to MPH
+ SPEED = ((dt*681.818)/10000)/88;
  Serial.print("MPH =\t"); 
  Serial.print(SPEED); 
- Serial.print("\t Hz=\t");
- Serial.println(half_revolutions);
- half_revolutions = 0; // Restart the RPM counter
- timeOld = millis(); // Update lasmillis
  attachInterrupt(0, SPEED_ADD , FALLING); 
  lcd.clear();
  lcd.setCursor(3,0);
@@ -56,5 +52,7 @@
  }
 
  void SPEED_ADD (){
-  half_revolutions++;
+  t = millis();
+  dt = t - timeOld;
+  timeOld = t;
  }
