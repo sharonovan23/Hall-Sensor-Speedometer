@@ -5,18 +5,24 @@
 
 #include <LiquidCrystal.h>
 
+#define k 681.81
+#define pi  3.141592
+#define diameter  1.91667
+
 
  const int rs = 12, en = 11, d4 = 6, d5 = 5, d6 = 4, d7 = 3;
  LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
  const int buzzerPin = 9;
  const int ledPin = 13;
  const int hallPin = 2;
- unsigned int SPEED = 0;
+ float SPEED = 0;
  unsigned int long timeOld = 0;
  unsigned int t;
  unsigned int dt;
- long pi = 3.141592;
- long diameter = 1.91667;
+ //long pi = 3.141592;
+ //long diameter = 1.91667;
+ unsigned int tim, timePrev;
+ float prev_spd, show_spd;
 
  
  void setup(){
@@ -28,23 +34,31 @@
 
  
  void loop(){
- if (millis() - timeOld == 1000){ //Update every one second, this will be equal to reading frecuency (Hz).
- SPEED = ((dt*681.818)/10000)/88;
+  
+ tim = millis();
+ if (tim - timePrev >= 1000){ //Update every one second, this will be equal to reading frecuency (Hz).
+ timePrev = tim;
+ SPEED = pi*diameter*k/(float)dt;//((dt*681.818)/10000)/88;
+ 
+ if (SPEED == prev_spd)show_spd = 0;
+ else show_spd = SPEED;
+ 
+ prev_spd = SPEED;
  Serial.print("MPH =\t"); 
  Serial.print(SPEED); 
- attachInterrupt(0, SPEED_ADD , FALLING); 
+ //attachInterrupt(0, SPEED_ADD , FALLING); 
  lcd.clear();
  lcd.setCursor(3,0);
  lcd.print(" MPH = ");
- lcd.print(SPEED);
+ lcd.print(show_spd,1);
  lcd.setCursor(0,1);
 
- if (SPEED >= 10) {
+ if (show_spd >= 10) {
   lcd.print("   SLOW DOWN! ");
   digitalWrite(buzzerPin,HIGH);
  }
 
- if (SPEED < 10) {
+ if (show_spd < 10) {
   digitalWrite(buzzerPin,LOW);
  }
 
